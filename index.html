@@ -1,0 +1,205 @@
+<!-- created by yasai
+  2018/06/27 -->
+<!-- forked by Egbert
+  2020/04/27 -->
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>艺术可视化形式2.0test </title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link href="" rel="stylesheet">
+
+
+    <link rel="icon" href="image/1.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="image/1.ico" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" href="fonts.css">
+
+    <script type="text/javascript" src="js/dat.gui.min.js"></script>
+    <script type="text/javascript" src="js/p5.min.js"></script>
+    <script type="text/javascript" src="js/p5.dom.min.js"></script>
+
+
+    <style type="text/css">
+      *{
+        margin:0;
+        Spacing:0;
+      }
+
+
+      #credits {
+        font-size: 12px;
+        position: absolute;
+        bottom: -25px;
+        right: 15px;
+        opacity: 0.6;
+        color: #ffffff;
+        max-width: 70%;
+        text-align: right;
+        line-height: 20px;
+      }
+      .logo {
+        font-size: 12px;
+        position: absolute;
+        bottom: 80px;
+        left: 25px;
+        color: #ffffff;
+        max-width: 70%;
+        line-height: 20px;
+        opacity: 0.7;
+      }
+
+      .iconlink{
+        bottom: 50px;
+        margin-right: 0px;
+      }
+      #img-path {
+        display: none;
+      }
+
+    </style>
+    
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?44f8fa2f0b239ea3093628142486b48a";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+
+  </head>
+  <body>
+
+<!--
+   <div id="credits"> 
+    <div class = "socaial" style="margin-right:10px">Created by @Yasai</div>
+    <div class = "socaial" style="margin-right:10px; margin-bottom: -40px">©️All my products may be used in both personal and commercial projects   </div>
+    <div class ="iconlink"> 
+      <span><a class="icon-weibo" href="https://weibo.com/psaiaevegas/profile?rightmod=1&wvr=6&mod=personnumber"  target="_blank"  data-icon="&#xe906;" ></a></span>
+      <span><a class="icon-zhihu" href="https://www.zhihu.com/people/wang-ya-sai/activities"  target="_blank"  data-icon="&#xe907;"></a></span>
+      <span><a class="icon-instagram" href="http://instagram.com/yasaisai"  target="_blank"  data-icon="&#xe903;"></a></span>
+      <span><a class="icon-twitter" href="https://twitter.com/yasai_wang"  target="_blank"  data-icon="&#xe905;"></a></span>
+    </div>
+
+  </div>
+
+  <div class = "logo" style="margin-left:10px; margin-bottom: -40px; "><a href = "https://wangyasai.github.io/designtools.html"><img src="logo.png" style ="width: 40px"></a></div>
+-->
+
+  <script type="text/javascript">
+    var type;
+    var type_;
+    var options ={  
+      Background: '#ffffff',
+      Color: '#ff8c00',
+      ColorMode: 'Flicker',
+      Size: 300,
+      Nums: 210,
+      noiseScale: 0.86,
+      Shape: 'e-motion',
+      Spacing:20,
+
+
+      Random: function () { 
+        var size = random(50,100);
+        SizeControl.setValue(size);
+
+        var nums = random(50,100);
+        NumsControl.setValue(nums);
+
+        var noise = random(0,1);
+        noiseControl.setValue(noise);
+
+        var spacing = random(10,50);
+        SpacingControl.setValue(spacing);
+
+        var shape = random( ['Wave','Rectangle', 'Circle']);
+        shapeControl.setValue(shape);
+
+
+        var Background =  random(['#580AFF','#00266b','#0a0a0a']);
+        bgcolorControl.setValue(Background);
+
+        var color =  random(['#E632A5', '#580AFF','#005CFF','#009788']);
+        colorControl.setValue(color);
+
+      },
+      Save : function(){
+        saveFrames("某某热搜的情绪", "png", 1, 1);
+      },
+
+    }
+
+
+
+    var gui, config;
+    var colorControl,rControl,gControl,bControl,noiseControl,SizeControl,RandomControl,shapeControl,SpacingControl,NumsControl,bgcolorControl,RandomControl,colorModeControl;
+
+    window.onload = function() {
+      document.getElementById('defaultCanvas0').onmousedown = function(e) {
+        // 阻止默认行为并取消冒泡
+        if(typeof e.preventDefault === 'function') {
+          e.preventDefault();
+          e.stopPropagation();
+        }else {
+          e.returnValue = false;
+          e.cancelBubble = true;
+        }
+      }
+      gui = new dat.GUI();
+
+
+  //folder1
+  var folder1 = gui.addFolder('Controls');
+
+
+  shapeControl = folder1.add(options, 'Shape', ['Wave','Annulus','Rectangle', 'Circle'] );
+  shapeControl.onChange(draw);
+
+
+  bgcolorControl = folder1.addColor(options, 'Background');
+  bgcolorControl.onChange(draw);
+
+
+  colorModeControl = folder1.add(options, 'ColorMode',['Single','Flicker']);
+  colorModeControl.onChange(draw);
+
+  colorControl = folder1.addColor(options, 'Color');
+  colorControl.onChange(draw);
+
+  noiseControl = folder1.add(options, 'noiseScale',0,1);
+  noiseControl.onChange(draw);
+
+
+  SizeControl = folder1.add(options, 'Size',1,400);
+  SizeControl.onChange(draw);
+
+
+  NumsControl = folder1.add(options, 'Nums',1,280);
+  NumsControl.onChange(draw);
+
+
+  SpacingControl = folder1.add(options, 'Spacing',0,100);
+  SpacingControl.onChange(draw);
+
+  RandomControl = folder1.add(options, 'Random');
+
+
+  var SaveControl = folder1.add(options, 'Save');
+  folder1.open();
+};
+
+
+
+</script>
+
+<script type="text/javascript" src="js/sketch.js"></script>
+</body>
+
+</html>
+
